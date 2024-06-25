@@ -116,7 +116,6 @@
 	</xacro:sensor_orbbec_astra>
 
 	<!-- Gazebo ros2 control plugins -->
-	<!-- <xacro:ros2_control/> -->
-
+	<xacro:include filename="$(find rb1_ros2_description)/urdf/utils/control.xacro" />
 
 </robot>
