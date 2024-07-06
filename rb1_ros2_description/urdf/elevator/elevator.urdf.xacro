@@ -8,11 +8,11 @@
 	<!-- PARAMS: -->
 	<!-- name : name of the link: -->
 	<!-- hq: selects model in high quality (.dae) -->
-    <xacro:macro name="solid_cuboid_inertia" params="m h d w">
+    <xacro:macro name="solid_cuboid_inertia1" params="m h d w">
 		<inertia  ixx="${(m*(h*h+d*d))/12}" ixy = "0" ixz = "0"
               iyy="${(m*(w*w+d*d))/12}" iyz = "0"
               izz="${(m*(w*w+h*h))/12}"
-     /> 
+        /> 
     </xacro:macro>
 	<!-- ELEVATOR_BASE_LINK -->
 	<joint name="${prefix}_base_joint" type="fixed">
@@ -30,9 +30,9 @@
 						izz="0.78125"/>
 		</inertial-->
 		<inertial>
-			<mass value="0.005" />
+			<mass value="2" />
 			<origin xyz="0 0 -0.27" />
-			<xacro:solid_cuboid_inertia m="0.005" h="0.05" d="0.05" w="0.05"/>
+			<xacro:solid_cuboid_inertia1 m="2" h="0.05" d="0.05" w="0.05"/>
 		</inertial> 
 		<visual>
 			<origin xyz="0 0 0" rpy="0 0 0" />
@@ -46,7 +46,7 @@
 					<mesh filename="package://rb1_ros2_description/meshes/elevator/rb1_elevator_base.stl"/>
 				</geometry>
 			</xacro:unless>
-			<material name="darkgrey">
+			<material name="black">
 				<color rgba="0.1 0.1 0.1 1"/>
 			</material>
 		</visual>  
@@ -64,7 +64,9 @@
 			<parent link="${prefix}_base_link"/>
 			<child link="${prefix}_platform_link" />
 			<axis xyz="0 0 1"/>
-			<limit effort="10.0" lower="0.0" upper="0.034" velocity="0.5"/>
+			<limit effort="1000.0" lower="0.0" upper="0.034" velocity="0.05"/> 
+            <dynamics damping="0.9" friction="1.0"/>
+            <!-- upper="0.034 -->
 	</joint> 
 	<link name="${prefix}_platform_link">
 		<!--inertial>
@@ -73,10 +75,11 @@
 			<inertia  ixx="0.00007" ixy="0.0"  ixz="0.0"  iyy="0.00007"  iyz="0.0"  izz="0.0078" />
 		</inertial-->
 		<inertial>
-			<mass value="0.005" />
+			<mass value="2" />
 			<origin xyz="0 0 -0.27" />
-			<xacro:solid_cuboid_inertia m="0.005" h="0.05" d="0.05" w="0.05"/>
-		</inertial>
+			<!-- <solid_cuboid_inertia m="0.005" h="0.05" d="0.05" w="0.05"/> -->
+            <xacro:solid_cuboid_inertia1 m="2" h="0.05" d="0.05" w="0.05"/>
+		</inertial> 
 		<visual>
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<xacro:if value="${hq}">
@@ -95,6 +98,7 @@
 		</visual>  
 		<collision>
 			<origin xyz="0 0 0" rpy="0 0 0 " />
+			<mass>2</mass>
 			<geometry>
 				<mesh filename="package://rb1_ros2_description/meshes/elevator/rb1_elevator_platform.dae"/>
 			</geometry>
@@ -109,4 +113,3 @@
 
 	
 </robot>
-

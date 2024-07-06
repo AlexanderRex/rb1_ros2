@@ -1,6 +1,6 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, ExecuteProcess, TimerAction, LogInfo
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler, ExecuteProcess, TimerAction, LogInfo
 from launch.substitutions import Command, LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
@@ -67,21 +67,28 @@ def generate_launch_description():
     spawn_robot1 = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-entity', robot_name_1, '-x', '-0.3', '-y', '-1.5', '-z', '0.0',
+        arguments=['-entity', robot_name_1, '-x', '0.0', '-y', '0.0', '-z', '0.0',
                    '-topic', robot_name_1+'/robot_description']
     )
 
-    joint_state_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+    load_joint_state_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
             'joint_state_broadcaster'],
         output='screen'
     )
     
-    diff_drive_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+    load_diff_drive_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
             'diffbot_base_controller'],
         output='screen'
     )
+
+    load_diff_position_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
+            'position_controller'],
+        output='screen'
+    )
+  
 
     return LaunchDescription([
         RegisterEventHandler(
@@ -91,7 +98,7 @@ def generate_launch_description():
                     TimerAction(
                         period=3.0,
                         actions=[
-                            joint_state_controller
+                            load_joint_state_controller
                         ]
                     )
                 ]
@@ -99,8 +106,15 @@ def generate_launch_description():
         ),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=joint_state_controller,
-                on_exit=[diff_drive_controller],
+                target_action=load_joint_state_controller,
+                on_exit=[load_diff_drive_controller],
+                
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_controller,
+                on_exit=[load_diff_position_controller],
                 
             )
         ),
