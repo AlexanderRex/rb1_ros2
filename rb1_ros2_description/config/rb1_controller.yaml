@@ -10,8 +10,8 @@ controller_manager:
     diffbot_base_controller:
       type: diff_drive_controller/DiffDriveController
     
-    position_controller:
-      type: position_controllers/JointGroupPositionController
+    effort_controller:
+      type: effort_controllers/JointGroupEffortController
 
 diffbot_base_controller:
   ros__parameters:
@@ -62,8 +62,8 @@ diffbot_base_controller:
     angular.z.max_jerk: 0.0
     angular.z.min_jerk: 0.0
   
-position_controller:
+effort_controller:
   ros__parameters:
     joints:
       - robot_evelator_platform_joint
-    interface_name: position
+    interface_name: effort

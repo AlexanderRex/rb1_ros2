@@ -83,9 +83,9 @@ def generate_launch_description():
         output='screen'
     )
 
-    load_diff_position_controller = ExecuteProcess(
+    load_diff_effort_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'start',
-            'position_controller'],
+            'effort_controller'],
         output='screen'
     )
   
@@ -114,7 +114,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_controller,
-                on_exit=[load_diff_position_controller],
+                on_exit=[load_diff_effort_controller],
                 
             )
         ),
